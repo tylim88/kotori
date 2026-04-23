@@ -51,5 +51,8 @@
 		"url": "https://github.com/???/???/issues"
 	},
 	"author": "???",
-	"license": "???"
+	"license": "???",
+	"dependencies": {
+		"react": "^19.2.5"
+	}
 }
