@@ -35,14 +35,17 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.12",
 		"@types/node": "^25.6.0",
+		"@types/react": "^19.2.14",
 		"@vitest/coverage-v8": "^4.1.5",
+		"bcp47-language-tags": "^1.1.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.4.0",
+		"react": "^19.2.5",
+		"react-dom": "^19.2.5",
 		"tsdown": "^0.21.10",
 		"tsx": "^4.21.0",
 		"typescript": "^6.0.3",
-		"vitest": "^4.1.5",
-		"react": "^19.2.5"
+		"vitest": "^4.1.5"
 	},
 	"repository": {
 		"type": "git",
@@ -53,9 +56,6 @@
 	},
 	"author": "tylim88",
 	"license": "MIT",
-	"dependencies": {
-		"language-tags": "^2.1.0"
-	},
 	"peerDependencies": {
 		"react": ">=19.2.5"
 	}
