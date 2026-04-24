@@ -11,7 +11,7 @@ const { dict } = kotori({
 // ❌ compile error: missing japanese translation
 const intro = dict({ 
     en: 'Hello {{name}}, is it {{time}} now?', // base string drives the type contract
-    zh: '你好，现在是 {{time}} 吗？',      // ❌ compile error: missing key 'nam' 
+    zh: '你好，现在是 {{time}} 吗？',      // ❌ compile error: missing key 'name' 
     ms: 'Hai {{nam}}, adakah pukul {{time}} sekarang?'  // ❌ compile error: unknown key 'nam' 
 })<{name: string; time: `${number}:${number}`}> // optional: type your arguments, by default it's `Record<'name'|'time', string>` in this example
 
