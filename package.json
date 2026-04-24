@@ -1,10 +1,10 @@
 {
 	"name": "kotori",
 	"description": "Strongly-typed and composable internationalization library for React",
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"scripts": {
 		"setup": "rm -rf node_modules && npm i && git init && husky",
-		"prepublishOnly": "npm run build",
+		"prepublishOnly": "npm i && npx tsc && npm run build",
 		"build": "tsdown",
 		"test": "vitest",
 		"lint": "npx @biomejs/biome check --write",

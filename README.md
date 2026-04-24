@@ -32,11 +32,12 @@ t('intro', { name: 'John', time: '12-00' })
 - No codegen
 - No JSON
 - No dependencies
+- No build step
 - 0.39kb gzipped
 - Modular and tree-shakeable
 - Language change in one page rerenders all pages
-- Variables typed and inferred from string literals
 - Translation keys are typed — no more string typos
+- Variables typed and inferred from string literals
 
 ## Installation
 
