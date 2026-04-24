@@ -1,6 +1,6 @@
-import { StrictMode } from 'react'
+import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { kotori } from './kotori'
+import { kotori } from '.'
 
 const { createTranslations, dict } = kotori({
 	primaryLanguageTag: 'en',
@@ -95,10 +95,28 @@ export const Page2 = () => {
 		</>
 	)
 }
+const App = () => {
+	const [number, setNumber] = useState(1)
+	return (
+		<>
+			<Page1 />
+			<div>
+				<button type="button" onClick={() => setNumber((n) => n + 1)}>
+					increase
+				</button>
+				<button type="button" onClick={() => setNumber((n) => n - 1)}>
+					decrease
+				</button>
+			</div>
+			{[...Array(number)].map((_, i) => (
+				<Page2 key={i} />
+			))}
+		</>
+	)
+}
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<Page1 />
-		<Page2 />
+		<App />
 	</StrictMode>,
 )

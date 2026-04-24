@@ -15,5 +15,12 @@
 			"!**/coverage",
 			"!**/bin"
 		]
+	},
+	"linter": {
+		"rules": {
+			"suspicious": {
+				"noArrayIndexKey": "warn"
+			}
+		}
 	}
 }

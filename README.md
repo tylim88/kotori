@@ -3,15 +3,22 @@
 Strongly-typed, modular i18n for React. Variables are inferred directly from your strings — no codegen, no JSON, no schema files.
 
 ```ts
-const intro = dict({ 
-    en: 'Hello {{name}}', // base string drives the type contract
-    zh: '你好 {{name}}',  // ✅ 
-    ms: 'Hai {{nama}}'  // ❌ compile error: unknown key 'nama' 
+const { dict } = kotori({
+    primaryLanguageTag: 'en',
+    secondaryLanguageTags: ['zh', 'ja', 'ms'],
 })
 
-t('intro', { name: 'John' }) // ✅ 
-t('intro')                   // ❌ compile error: missing { name }
-t('intro', { nama: 'John' }) // ❌ compile error: unknown key 'nama'
+// ❌ compile error: missing japanese translation
+const intro = dict({ 
+    en: 'Hello {{name}}, is it {{time}} now?', // base string drives the type contract
+    zh: '你好，现在是 {{time}} 吗？',      // ❌ compile error: missing key 'nam' 
+    ms: 'Hai {{nam}}, adakah pukul {{time}} sekarang?'  // ❌ compile error: unknown key 'nam' 
+})<{name: string; time: `${number}:${number}`}> // optional: type your arguments, by default it's `Record<'name'|'time', string>` in this example
+
+t('intro', { name: 'John', time: '12:25' }) // ✅ 
+t('intro', { time: '12:25' })                   // ❌ compile error: missing { name }
+t('intro', { nama: 'John', time: '12:25' }) // ❌ compile error: unknown key 'nama'
+t('intro', { name: 'John', time: '12-00' }) // ❌ compile error: invalid format for 'time'
 ```
 
 - No codegen
