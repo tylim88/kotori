@@ -55,7 +55,7 @@ const time = dict({
     zh: '时间 {{time}}',
     ja: '時間 {{time}}',
     ms: 'waktu {{time}}',
-// type your arguments, by default it's `Record<string, string>`
+// optional: type your arguments, by default it's `Record<string, string>`
 })<{ time: `${number}:${number}:${number}` }> 
 
 const { useTranslations } = createTranslations({
@@ -179,15 +179,17 @@ const time = dict({ en: '{{hour}}:{{minute}}' })<{
 Creates a scoped i18n instance.
 
 | option | type | description |
-|---|---|---|
+| --- | --- | --- |
 | `primaryLanguageTag` | `AllTags` | The source language. Drives variable inference. |
 | `secondaryLanguageTags` | `AllTags[]` | Additional supported languages. |
 
 Returns `{ dict, createTranslations }`.
 
-### `dict(translations)(argsType?)`
+### `dict(translations)<argsType?>`
 
 Defines a translation unit. Takes one string per language. Optionally takes a generic to type the interpolated variables.
+
+Returns `() => {translations: Record<string, string>}`.
 
 ### `createTranslations(dicts)`
 
@@ -198,7 +200,7 @@ Registers a set of dicts and returns `{ useTranslations }`. Call once per page o
 React hook. Returns `{ t, getLanguage, setLanguage }`.
 
 | return | description |
-|---|---|
+| --- | --- |
 | `t(key, args?)` | Returns the translated string for the current language. `args` is required if the string has variables, omitted if it doesn't. |
 | `getLanguage()` | Returns the current language tag. |
 | `setLanguage(tag)` | Updates the language and rerenders all active `useTranslations` consumers. |
