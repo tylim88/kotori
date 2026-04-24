@@ -66,7 +66,7 @@ const time = dict({
     zh: '时间 {{time}}',
     ja: '時間 {{time}}',
     ms: 'waktu {{time}}',
-// optional: type your arguments, by default it's `Record<string, string>`
+// optional: type your arguments, by default it's `Record<time, string>` in this example
 })<{ time: `${number}:${number}:${number}` }> 
 
 const { useTranslations } = createTranslations({
@@ -149,6 +149,8 @@ export const Page2 = () => {
 ```
 
 ## How It Works
+
+![how kotori works](image.png) 
 
 ### One `kotori` instance per app
 
