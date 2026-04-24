@@ -155,6 +155,8 @@ export const kotori = <
 // const abc = () => {
 // 	const { getLanguage, setLanguage, t } = useTranslations()
 // 	t('dict1', { x: '1', y: 1 })
+// 	t('dict1', { x: '1', y: 'a' })
+// 	t('dict1', { x: '1', y: 1, z: '' })
 // 	t('dict2')
 // 	t('dict2', { x: '1', y: 1 })
 // 	t('dict3', { a: 1, b: 'v' })

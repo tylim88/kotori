@@ -75,7 +75,7 @@ const time = dict({
     zh: '时间 {{time}}',
     ja: '時間 {{time}}',
     ms: 'waktu {{time}}',
-// optional: type your arguments, by default it's `Record<time, string>` in this example
+// optional: type your arguments, by default it's `Record<'time', string>` in this example
 })<{ time: `${number}:${number}:${number}` }> 
 
 const { useTranslations } = createTranslations({
