@@ -193,7 +193,7 @@ Returns `{ dict, createTranslations }`.
 
 Defines a translation unit. Takes one string per language. Optionally takes a generic to type the interpolated variables.
 
-Returns `() => {translations: Record<string, string>}`.
+Returns `() => { translations: Record<string, string> }`.
 
 ### `createTranslations(dicts)`
 
