@@ -7,10 +7,18 @@ export type SubTags = BCP47LanguageTagName extends `${infer SubTag}-${string}`
 	: never
 export type AllTags = Tags | SubTags
 
+type Trim<T extends string> = T extends ` ${infer R}`
+	? Trim<R>
+	: T extends `${infer L} `
+		? Trim<L>
+		: T
+
 export type ExtractVariables<T extends string> =
 	T extends `${string}{{${infer P}}}${infer Q}`
-		? P | ExtractVariables<Q>
+		? Trim<P> | ExtractVariables<Q>
 		: never
+
+declare const _args: unique symbol
 
 export const kotori = <
 	const PrimaryTag extends AllTags,
@@ -24,61 +32,109 @@ export const kotori = <
 	let languageTag: WorkingTags = props.primaryLanguageTag
 
 	return {
-		dict: <
-			const PrimaryString extends string,
-			const SecondaryObject extends {
-				[Key in SecondaryTags]: ExtractVariables<PrimaryString> extends infer PrimaryVariables
-					? ExtractVariables<
-							SecondaryObject[Key] & string
-						> extends infer SecondaryVariables
-						? PrimaryVariables[] extends SecondaryVariables[]
-							? SecondaryVariables[] extends PrimaryVariables[]
-								? SecondaryObject[Key]
-								: 'variables not match!'
-							: 'variables not match!!'
+		dict:
+			<
+				const PrimaryString extends string,
+				const SecondaryObject extends {
+					[Key in SecondaryTags]: ExtractVariables<PrimaryString> extends infer PrimaryVariables
+						? ExtractVariables<
+								SecondaryObject[Key] & string
+							> extends infer SecondaryVariables
+							? PrimaryVariables[] extends SecondaryVariables[]
+								? SecondaryVariables[] extends PrimaryVariables[]
+									? SecondaryObject[Key]
+									: 'variables not match!'
+								: 'variables not match!!'
+							: never
 						: never
-					: never
-			},
-		>(
-			translation: { [Key in PrimaryTag]: PrimaryString } & SecondaryObject,
-		) => translation,
+				},
+			>(
+				translation: { [Key in PrimaryTag]: PrimaryString } & SecondaryObject,
+			) =>
+			<
+				const ArgsType extends Record<
+					ExtractVariables<PrimaryString>,
+					string | number
+				> = Record<ExtractVariables<PrimaryString>, string>,
+			>() =>
+				({ translation }) as Readonly<{
+					translation: typeof translation
+					[_args]?: ArgsType
+				}>,
 		createTranslations: <
-			const Dicts extends Record<string, Record<WorkingTags, string>>,
+			const DictCallbacks extends Record<
+				string,
+				() => Readonly<{
+					translation: Record<WorkingTags, string>
+					[_args]?: Record<string, string | number>
+				}>
+			>,
 		>(
-			dicts: Dicts,
+			dictCallbacks: DictCallbacks,
 		) => {
-			return {
-				useTranslations: useSyncExternalStore(
-					(listener) => {
-						listeners.add(listener)
-						return () => listeners.delete(listener)
-					},
-					() => ({
-						getLanguage: () => languageTag,
-						setLanguage: (tag: WorkingTags) => {
-							languageTag = tag
-							listeners.forEach((listener) => {
-								listener()
-							})
-						},
-						t: <Key extends keyof Dicts>(
-							key: Key,
-							args: Record<ExtractVariables<Dicts[Key][WorkingTags]>, string>,
-						) => {
-							let locale =
-								dicts[key]?.[languageTag] || 'error: translation not found'
+			const createSnapshot = () => ({
+				getLanguage: () => languageTag,
+				setLanguage: (tag: WorkingTags) => {
+					languageTag = tag
+					currentSnapshot = createSnapshot()
+					listeners.forEach((listener) => {
+						listener()
+					})
+				},
+				t: <Key extends keyof DictCallbacks>(
+					key: Key,
+					...args: keyof NonNullable<
+						ReturnType<DictCallbacks[Key]>[typeof _args]
+					> extends never
+						? []
+						: [NonNullable<ReturnType<DictCallbacks[Key]>[typeof _args]>]
+				) => {
+					let locale = dictCallbacks[key]!().translation[languageTag]
 
-							for (const objKey in args) {
-								locale = locale.replace(
-									/\{\{\s*(\w+)\s*\}\}/g,
-									(_, key) => args[objKey as keyof typeof args] ?? `{{${key}}}`,
-								)
-							}
-							return locale
+					for (const objKey in args) {
+						locale = locale.replace(
+							new RegExp(`\\{\\{\\s*${objKey}\\s*\\}\\}`, 'g'),
+							() => String(args[objKey]),
+						)
+					}
+					return locale
+				},
+			})
+			let currentSnapshot = createSnapshot()
+			return {
+				useTranslations: () =>
+					useSyncExternalStore(
+						(listener) => {
+							listeners.add(listener)
+							return () => listeners.delete(listener)
 						},
-					}),
-				),
+						() => currentSnapshot,
+					),
 			}
 		},
 	}
 }
+
+// const { createTranslations, dict } = kotori({
+// 	primaryLanguageTag: 'en',
+// 	secondaryLanguageTags: ['zh'],
+// })
+// const dict1 = dict({ en: '{{x}} {{ y }}', zh: '{{x}} {{y}}' })<{
+// 	x: string
+// 	y: number
+// }>
+// const dict3 = dict({ en: '{{a}} {{ b }}', zh: '{{a}} {{b}}' })<{
+// 	a: number
+// 	b: string
+// }>
+// const dict2 = dict({ en: 'a', zh: 'b' })
+
+// const { useTranslations } = createTranslations({ dict1, dict2, dict3 })
+
+// const abc = () => {
+// 	const { getLanguage, setLanguage, t } = useTranslations()
+// 	t('dict1', { x: '1', y: 1 })
+// 	t('dict2')
+// 	t('dict2', { x: '1', y: 1 })
+// 	t('dict3', { a: 1, b: 'v' })
+// }
