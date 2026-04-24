@@ -8,17 +8,25 @@ const { dict } = kotori({
     secondaryLanguageTags: ['zh', 'ja', 'ms'],
 })
 
-// ❌ compile error: missing japanese translation
+// ❌ TypeScript error: missing japanese translation
 const intro = dict({ 
-    en: 'Hello {{name}}, is it {{time}} now?', // base string drives the type contract
-    zh: '你好，现在是 {{time}} 吗？',      // ❌ compile error: missing key 'name' 
-    ms: 'Hai {{nam}}, adakah pukul {{time}} sekarang?'  // ❌ compile error: unknown key 'nam' 
-})<{name: string; time: `${number}:${number}`}> // optional: type your arguments, by default it's `Record<'name'|'time', string>` in this example
+    // ⭐ base string drives the type contract
+    en: 'Hello {{name}}, is it {{time}} now?', 
+     // ❌ TypeScript error: missing key 'name' 
+    zh: '你好，现在是 {{time}} 吗？',
+    // ❌ TypeScript error: unknown key 'nam'      
+    ms: 'Hai {{nam}}, adakah pukul {{time}} sekarang?'  
+// optional: type your arguments, by default it's `Record<'name'|'time', string>` in this example
+})<{name: string; time: `${number}:${number}`}> 
 
-t('intro', { name: 'John', time: '12:25' }) // ✅ 
-t('intro', { time: '12:25' })                   // ❌ compile error: missing { name }
-t('intro', { nama: 'John', time: '12:25' }) // ❌ compile error: unknown key 'nama'
-t('intro', { name: 'John', time: '12-00' }) // ❌ compile error: invalid format for 'time'
+// ✅ Works
+t('intro', { name: 'John', time: '12:25' }) 
+// ❌ TypeScript error: missing { name }
+t('intro', { time: '12:25' })
+// ❌ TypeScript error: unknown key 'nama'                   
+t('intro', { nama: 'John', time: '12:25' }) 
+// ❌ TypeScript error: invalid format for 'time'
+t('intro', { name: 'John', time: '12-00' }) 
 ```
 
 - No codegen
