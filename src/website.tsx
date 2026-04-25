@@ -2,7 +2,7 @@ import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { kotori } from '.'
 
-const { createTranslations, dict } = kotori({
+const { createTranslations, dict, setLanguage } = kotori({
 	primaryLanguageTag: 'en',
 	secondaryLanguageTags: ['zh', 'ja', 'ms'],
 })
@@ -27,11 +27,13 @@ const { useTranslations } = createTranslations({
 })
 
 const Page1 = () => {
-	const { t, setLanguage } = useTranslations()
+	const { t, setLanguage, language } = useTranslations()
 	return (
 		<>
+			<p>Page 2</p>
 			<select
 				name="language"
+				value={language}
 				onChange={(e) => setLanguage(e.target.value as 'en')}
 			>
 				<option value="en">English</option>
@@ -72,11 +74,13 @@ const { useTranslations: useTranslations2 } = createTranslations({
 	lastLogin,
 })
 export const Page2 = () => {
-	const { t, setLanguage } = useTranslations2()
+	const { t, setLanguage, language } = useTranslations2()
 	return (
 		<>
+			<p>Page 2</p>
 			<select
 				name="language"
+				value={language}
 				onChange={(e) => setLanguage(e.target.value as 'en')}
 			>
 				<option value="en">English</option>
@@ -96,21 +100,19 @@ export const Page2 = () => {
 	)
 }
 const App = () => {
-	const [number, setNumber] = useState(1)
+	const [number, setNumber] = useState(2)
 	return (
 		<>
 			<Page1 />
 			<div>
 				<button type="button" onClick={() => setNumber((n) => n + 1)}>
-					increase
+					mount page2
 				</button>
 				<button type="button" onClick={() => setNumber((n) => n - 1)}>
-					decrease
+					unmount page2
 				</button>
 			</div>
-			{[...Array(number)].map((_, i) => (
-				<Page2 key={i} />
-			))}
+			{number >= 0 && [...Array(number)].map((_, i) => <Page2 key={i} />)}
 		</>
 	)
 }

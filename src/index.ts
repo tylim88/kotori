@@ -32,21 +32,18 @@ export const kotori = <
 	let languageTag: WorkingTags = props.primaryLanguageTag
 
 	const snapshots = new Map<symbol, object>()
-
-	const languageTagMethod = {
-		getLanguage: () => languageTag,
-		setLanguage: (tag: WorkingTags) => {
-			languageTag = tag
-			snapshots.forEach((snapshot, key) => {
-				snapshots.set(key, { ...snapshot })
-			})
-			listeners.forEach((listener) => {
-				listener()
-			})
-		},
+	const setLanguage = (tag: WorkingTags) => {
+		languageTag = tag
+		snapshots.forEach((snapshot, key) => {
+			snapshots.set(key, { ...snapshot, language: tag })
+		})
+		listeners.forEach((listener) => {
+			listener()
+		})
 	}
 
 	return {
+		setLanguage,
 		dict:
 			<
 				const PrimaryString extends string,
@@ -88,9 +85,9 @@ export const kotori = <
 			dictCallbacks: DictCallbacks,
 		) => {
 			const s = Symbol()
-			let refCount = 0
 			const snapshot = {
-				...languageTagMethod,
+				language: languageTag,
+				setLanguage,
 				t: <Key extends keyof DictCallbacks>(
 					key: Key,
 					...args: keyof NonNullable<
@@ -99,15 +96,16 @@ export const kotori = <
 						? []
 						: [NonNullable<ReturnType<DictCallbacks[Key]>[typeof _args]>]
 				) => {
-					let locale = dictCallbacks[key]?.().translation[languageTag]
-					if (!locale) return
+					let locale =
+						dictCallbacks[key]?.().translation[languageTag] ||
+						'unable_to_load_translations'
 					for (const objKey in args[0]) {
 						locale = locale.replace(
 							new RegExp(`\\{\\{\\s*${objKey}\\s*\\}\\}`, 'g'),
 							() => String(args[0]?.[objKey]),
 						)
 					}
-					return locale
+					return locale as string
 				},
 			}
 			snapshots.set(s, snapshot)
@@ -115,17 +113,8 @@ export const kotori = <
 				useTranslations: () =>
 					useSyncExternalStore(
 						(listener) => {
-							// this redundancy is needed to prevent strict mode from crashing
-							if (refCount === 0) {
-								snapshots.set(s, snapshot)
-							}
-							refCount++
 							listeners.add(listener)
 							return () => {
-								refCount--
-								if (refCount === 0) {
-									snapshots.delete(s)
-								}
 								listeners.delete(listener)
 							}
 						},
@@ -154,7 +143,7 @@ export const kotori = <
 // const { useTranslations } = createTranslations({ dict1, dict2, dict3 })
 
 // const abc = () => {
-// 	const { getLanguage, setLanguage, t } = useTranslations()
+// 	const { language, setLanguage, t } = useTranslations()
 // 	t('dict1', { x: '1', y: 1 })
 // 	t('dict1', { x: '1', y: 'a' })
 // 	t('dict1', { x: '1', y: 1, z: '' })
