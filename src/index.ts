@@ -130,6 +130,7 @@ export const kotori = <
 							}
 						},
 						() => snapshots.get(s) as typeof snapshot,
+						() => snapshot,
 					),
 			}
 		},
