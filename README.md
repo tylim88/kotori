@@ -39,6 +39,8 @@ t('intro', { name: 'John', time: '12-00' })
 - Translation keys are typed — no more string typos
 - Variables typed and inferred from string literals
 
+Demo: <https://stackblitz.com/edit/vitejs-vite-nyxwmhre?file=src%2FApp.tsx>
+
 ## Installation
 
 ```bash
