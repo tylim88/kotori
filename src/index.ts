@@ -125,29 +125,3 @@ export const kotori = <
 		},
 	}
 }
-
-// const { createTranslations, dict } = kotori({
-// 	primaryLanguageTag: 'en',
-// 	secondaryLanguageTags: ['zh'],
-// })
-// const dict1 = dict({ en: '{{x}} {{ y }}', zh: '{{x}} {{y}}' })<{
-// 	x: string
-// 	y: number
-// }>
-// const dict3 = dict({ en: '{{a}} {{ b }}', zh: '{{a}} {{b}}' })<{
-// 	a: number
-// 	b: string
-// }>
-// const dict2 = dict({ en: 'a', zh: 'b' })
-
-// const { useTranslations } = createTranslations({ dict1, dict2, dict3 })
-
-// const abc = () => {
-// 	const { language, setLanguage, t } = useTranslations()
-// 	t('dict1', { x: '1', y: 1 })
-// 	t('dict1', { x: '1', y: 'a' })
-// 	t('dict1', { x: '1', y: 1, z: '' })
-// 	t('dict2')
-// 	t('dict2', { x: '1', y: 1 })
-// 	t('dict3', { a: 1, b: 'v' })
-// }

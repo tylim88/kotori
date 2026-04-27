@@ -162,7 +162,7 @@ export const Page2 = () => {
 
 ## How It Works
 
-![how kotori works](image.png) 
+![how kotori works](image.webp) 
 
 ### One `kotori` instance per app
 
