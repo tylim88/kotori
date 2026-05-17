@@ -45,11 +45,13 @@
 	],
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.12",
+		"@testing-library/react": "^16.3.2",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"@vitejs/plugin-react": "^6.0.1",
 		"@vitest/coverage-v8": "^4.1.5",
 		"bcp47-language-tags": "^1.1.0",
+		"happy-dom": "^20.9.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.4.0",
 		"react": "^19.2.5",

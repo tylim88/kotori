@@ -1,3 +1,6 @@
+import { act, renderHook } from '@testing-library/react'
+import { createElement } from 'react'
+import { renderToString } from 'react-dom/server'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { kotori } from '.'
 
@@ -216,32 +219,6 @@ describe('kotori', () => {
 
 			i18n.setLanguage('en')
 			expect(i18n.t(greeting)).toBe('Hello')
-		})
-	})
-
-	describe('subscription system', () => {
-		let i18n = kotori({
-			primaryLanguageTag: 'en',
-			secondaryLanguageTags: ['zh', 'ja'],
-		})
-
-		beforeEach(() => {
-			i18n = kotori({
-				primaryLanguageTag: 'en',
-				secondaryLanguageTags: ['zh', 'ja'],
-			})
-		})
-
-		it('language changes are reflected in translations', () => {
-			const greeting = i18n.dict({
-				en: 'Hello',
-				zh: '你好',
-				ja: 'こんにちは',
-			})
-
-			expect(i18n.t(greeting)).toBe('Hello')
-			i18n.setLanguage('zh')
-			expect(i18n.t(greeting)).toBe('你好')
 		})
 	})
 
@@ -510,6 +487,100 @@ describe('kotori', () => {
 			expect(i18n.t(greeting, { name: '张三' })).toBe('你好张三')
 			expect(i18n.t(farewell, { name: '李四' })).toBe('再见李四')
 			expect(i18n.t(thanks, { name: '王五' })).toBe('谢谢你王五')
+		})
+	})
+
+	describe('subscription system', () => {
+		let i18n = kotori({
+			primaryLanguageTag: 'en',
+			secondaryLanguageTags: ['zh', 'ja'],
+		})
+
+		beforeEach(() => {
+			i18n = kotori({
+				primaryLanguageTag: 'en',
+				secondaryLanguageTags: ['zh', 'ja'],
+			})
+		})
+
+		it('language changes are reflected in translations', () => {
+			const greeting = i18n.dict({
+				en: 'Hello',
+				zh: '你好',
+				ja: 'こんにちは',
+			})
+
+			expect(i18n.t(greeting)).toBe('Hello')
+			i18n.setLanguage('zh')
+			expect(i18n.t(greeting)).toBe('你好')
+		})
+
+		it('works during SSR rendering', () => {
+			const i18nSSR = kotori({
+				primaryLanguageTag: 'en',
+				secondaryLanguageTags: ['zh'],
+			})
+
+			const greeting = i18nSSR.dict({
+				en: 'Hello',
+				zh: '你好',
+			})
+
+			i18nSSR.setLanguage('zh')
+
+			const html = renderToString(
+				createElement(() => {
+					i18nSSR.useT()
+					return <span>{i18nSSR.t(greeting)}</span>
+				}),
+			)
+
+			expect(html).toContain('你好')
+		})
+
+		it('updates hook subscribers when language changes', () => {
+			const { result } = renderHook(() => i18n.useT())
+
+			expect(result.current).toBe('en')
+
+			act(() => {
+				i18n.setLanguage('zh')
+			})
+
+			expect(result.current).toBe('zh')
+		})
+
+		it('maintains hook isolation across instances', () => {
+			const i18nA = kotori({
+				primaryLanguageTag: 'en',
+				secondaryLanguageTags: ['zh'],
+			})
+			const i18nB = kotori({
+				primaryLanguageTag: 'fr',
+				secondaryLanguageTags: ['es'],
+			})
+
+			const hookA = renderHook(() => i18nA.useT())
+			const hookB = renderHook(() => i18nB.useT())
+
+			expect(hookA.result.current).toBe('en')
+			expect(hookB.result.current).toBe('fr')
+
+			act(() => {
+				i18nA.setLanguage('zh')
+			})
+
+			expect(hookA.result.current).toBe('zh')
+			expect(hookB.result.current).toBe('fr')
+		})
+
+		it('test unmount', () => {
+			const hook = renderHook(() => i18n.useT())
+			hook.unmount()
+
+			act(() => {
+				i18n.setLanguage('ja')
+			})
 		})
 	})
 })

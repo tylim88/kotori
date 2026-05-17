@@ -63,7 +63,7 @@ const lastLogin = dict({
 	ms: 'Log masuk terakhir: {{date}} pada {{time}}',
 })<{ date: `${number}-${number}-${number}`; time: `${number}:${number}` }>
 
-export const Page2 = () => {
+const Page2 = () => {
 	const language = useT()
 	return (
 		<>
@@ -89,7 +89,7 @@ export const Page2 = () => {
 		</>
 	)
 }
-const App = () => {
+export const App = () => {
 	const [number, setNumber] = useState(2)
 	return (
 		<>
