@@ -8,9 +8,9 @@ jobs:
       - uses: actions/setup-node@v6
       - run: npm i
       - run: npm test
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
-          files: ./coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
       - run: npm run build
       - run: npm run lint
       
